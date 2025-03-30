@@ -1,10 +1,11 @@
 import Product from "../models/Product.js";
 
-// Create a new product
 export const createProduct = async (req, res) => {
-  const { title, description, price, image, userId } = req.body;
+  console.log("Current user:", req.user); // 👈 Add this temporarily
 
-  if (!title || !price || !userId) {
+  const { title, description, price, image, category } = req.body;
+
+  if (!title || !price) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
@@ -14,7 +15,8 @@ export const createProduct = async (req, res) => {
       description,
       price,
       image,
-      createdBy: userId,
+      category,
+      createdBy: req.user._id, // ✅ This line failed because req.user is undefined
     });
 
     await product.save();

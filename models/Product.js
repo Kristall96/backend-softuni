@@ -43,7 +43,22 @@ const productSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    ratings: [ratingSchema], // ⭐ Added this line
+    ratings: [ratingSchema],
+
+    // ✅ Add this for category filtering
+    category: {
+      type: String,
+      enum: [
+        "best-seller",
+        "most-liked",
+        "new-arrival",
+        "limited-edition",
+        "seasonal",
+        "staff-picks",
+        "classic-collection",
+      ],
+      default: "new-arrival",
+    },
   },
   { timestamps: true }
 );

@@ -2,16 +2,24 @@ import express from "express";
 import {
   createProduct,
   rateProduct,
+  getProducts,
 } from "../controllers/productController.js";
-
-import { getProducts } from "../controllers/productController.js";
+import { protect, isAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", createProduct);
+// ✅ PROTECTED route first — admin only
+router.post("/", protect, isAdmin, createProduct);
+
+// Rating route
 router.post("/:id/rate", rateProduct);
+
+// Get all products
+router.get("/", getProducts);
+
+// Optional test route
 router.get("/test", (req, res) => {
   res.json({ message: "Product routes working" });
 });
-router.get("/", getProducts);
+
 export default router;
