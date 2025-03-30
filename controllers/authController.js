@@ -46,8 +46,9 @@ export const registerUser = async (req, res) => {
 
   try {
     const userExists = await User.findOne({ email });
-    if (userExists)
+    if (userExists) {
       return res.status(400).json({ message: "Email already registered" });
+    }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -56,14 +57,27 @@ export const registerUser = async (req, res) => {
       username,
       email,
       password: hashedPassword,
-      isAdmin: isAdmin || false, // <- this line lets you optionally set admin
+      isAdmin: isAdmin || false,
     });
 
-    await newUser.save();
+    const savedUser = await newUser.save();
 
-    res
-      .status(201)
-      .json({ message: "User created successfully", userId: newUser._id });
+    // ✅ Generate token
+    const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    // ✅ Return token and user info
+    res.status(201).json({
+      message: "User registered successfully",
+      token,
+      user: {
+        _id: savedUser._id,
+        username: savedUser.username,
+        email: savedUser.email,
+        isAdmin: savedUser.isAdmin,
+      },
+    });
   } catch (error) {
     console.error("Register Error:", error);
     res.status(500).json({ message: "Server error" });
