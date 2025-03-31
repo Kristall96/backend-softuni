@@ -50,6 +50,11 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: "Email already registered" });
     }
 
+    const usernameExists = await User.findOne({ username });
+    if (usernameExists) {
+      return res.status(400).json({ message: "Username already taken" });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -60,22 +65,21 @@ export const registerUser = async (req, res) => {
       isAdmin: isAdmin || false,
     });
 
-    const savedUser = await newUser.save();
+    await newUser.save();
 
-    // ✅ Generate token
-    const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
+    // ✅ generate token immediately after registration
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    // ✅ Return token and user info
     res.status(201).json({
-      message: "User registered successfully",
+      message: "Registration successful",
       token,
       user: {
-        _id: savedUser._id,
-        username: savedUser.username,
-        email: savedUser.email,
-        isAdmin: savedUser.isAdmin,
+        _id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        isAdmin: newUser.isAdmin,
       },
     });
   } catch (error) {
