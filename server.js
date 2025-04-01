@@ -10,10 +10,10 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Allowed origins for CORS
 const allowedOrigins = [
   "http://localhost:5173",
   "https://mugmarvel.store",
+  "https://www.mugmarvel.store",
   "https://backend-softuni.onrender.com",
 ];
 
