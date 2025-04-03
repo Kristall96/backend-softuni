@@ -12,7 +12,7 @@ const router = express.Router();
 router.post("/", protect, isAdmin, createProduct);
 
 // Rating route
-router.post("/:id/rate", rateProduct);
+router.post("/:id/rate", protect, rateProduct);
 
 // Get all products
 router.get("/", getProducts);
