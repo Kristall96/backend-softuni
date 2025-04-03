@@ -5,6 +5,7 @@ import {
   rateProduct,
   getProducts,
   getSingleProduct,
+  addComment,
 } from "../controllers/productController.js";
 
 const router = express.Router();
