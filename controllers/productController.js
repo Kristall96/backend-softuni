@@ -166,3 +166,44 @@ export const getSingleProduct = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+// Add this new controller function
+export const addComment = async (req, res) => {
+  const { comment, userId } = req.body;
+  const productId = req.params.id;
+
+  if (!comment || !userId) {
+    return res
+      .status(400)
+      .json({ message: "Comment and user ID are required" });
+  }
+
+  try {
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    // Filter comments made by the same user
+    const userComments = product.comments.filter(
+      (c) => c.user.toString() === userId
+    );
+
+    if (userComments.length >= 10) {
+      return res
+        .status(400)
+        .json({
+          message: "You can post a maximum of 10 comments on this product.",
+        });
+    }
+
+    // Push the new comment
+    product.comments.push({ user: userId, message: comment });
+    await product.save();
+
+    res.status(201).json({
+      message: "Comment added successfully",
+      comments: product.comments,
+    });
+  } catch (err) {
+    console.error("Add Comment Error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

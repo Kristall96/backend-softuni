@@ -23,5 +23,6 @@ router.get("/test", (req, res) => {
   res.json({ message: "Product routes working" });
 });
 router.get("/:id", getSingleProduct);
+router.post("/:id/comment", protect, addComment);
 
 export default router;

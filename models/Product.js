@@ -1,5 +1,24 @@
 import mongoose from "mongoose";
 
+// ⬇️ Comment schema separated for flexibility
+const commentSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true,
+    maxlength: 500,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+// ⭐ Rating schema (only 1 per user)
 const ratingSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -11,10 +30,6 @@ const ratingSchema = new mongoose.Schema({
     required: true,
     min: 1,
     max: 5,
-  },
-  comment: {
-    type: String,
-    default: "",
   },
   createdAt: {
     type: Date,
@@ -43,9 +58,14 @@ const productSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
+    // ⭐ One rating per user
     ratings: [ratingSchema],
 
-    // ✅ Category for homepage filtering
+    // 💬 Multiple comments per user (up to 10 handled in controller)
+    comments: [commentSchema],
+
+    // ✅ Category
     category: {
       type: String,
       enum: [
@@ -60,9 +80,9 @@ const productSchema = new mongoose.Schema(
       default: "new-arrival",
     },
 
-    // ✅ Mug-specific filters for shop page
+    // ✅ Mug-specific attributes
     capacity: {
-      type: Number, // in milliliters
+      type: Number,
       required: true,
     },
     material: {
@@ -79,14 +99,20 @@ const productSchema = new mongoose.Schema(
       enum: ["Solid", "Printed", "Textured", "Custom"],
       default: "Solid",
     },
-    inStock: {
-      type: Boolean,
-      default: true,
+
+    // ✅ Stock as number instead of boolean
+    stock: {
+      type: Number,
+      required: true,
+      default: 0,
+      min: 0,
     },
+
     isFeatured: {
       type: Boolean,
       default: false,
     },
+
     tags: [String],
   },
   { timestamps: true }
