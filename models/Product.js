@@ -1,24 +1,6 @@
 import mongoose from "mongoose";
 
-// ⬇️ Comment schema separated for flexibility
-const commentSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  message: {
-    type: String,
-    required: true,
-    maxlength: 500,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-// ⭐ Rating schema (only 1 per user)
+// Allow up to 10 comments per user
 const ratingSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -31,11 +13,18 @@ const ratingSchema = new mongoose.Schema({
     min: 1,
     max: 5,
   },
+  comment: {
+    type: String,
+    default: "",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
+
+// Limit images to 10
+const arrayLimit = (val) => val.length <= 10;
 
 const productSchema = new mongoose.Schema(
   {
@@ -49,23 +38,24 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    image: {
-      type: String,
-      default: "https://via.placeholder.com/300",
+
+    // ✅ Support up to 10 image URLs
+    images: {
+      type: [String],
+      validate: [arrayLimit, "{PATH} exceeds the limit of 10"],
+      default: ["https://via.placeholder.com/300"],
     },
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
 
-    // ⭐ One rating per user
+    // ✅ Ratings and Comments combined
     ratings: [ratingSchema],
 
-    // 💬 Multiple comments per user (up to 10 handled in controller)
-    comments: [commentSchema],
-
-    // ✅ Category
+    // ✅ Shop filters
     category: {
       type: String,
       enum: [
@@ -80,9 +70,8 @@ const productSchema = new mongoose.Schema(
       default: "new-arrival",
     },
 
-    // ✅ Mug-specific attributes
     capacity: {
-      type: Number,
+      type: Number, // in milliliters
       required: true,
     },
     material: {
@@ -100,7 +89,7 @@ const productSchema = new mongoose.Schema(
       default: "Solid",
     },
 
-    // ✅ Stock as number instead of boolean
+    // ✅ Quantity-based stock
     stock: {
       type: Number,
       required: true,
