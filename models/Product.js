@@ -45,7 +45,7 @@ const productSchema = new mongoose.Schema(
     },
     ratings: [ratingSchema],
 
-    // ✅ Add this for category filtering
+    // ✅ Category for homepage filtering
     category: {
       type: String,
       enum: [
@@ -59,6 +59,35 @@ const productSchema = new mongoose.Schema(
       ],
       default: "new-arrival",
     },
+
+    // ✅ Mug-specific filters for shop page
+    capacity: {
+      type: Number, // in milliliters
+      required: true,
+    },
+    material: {
+      type: String,
+      enum: ["Ceramic", "Glass", "Stainless Steel", "Plastic", "Clay"],
+      required: true,
+    },
+    color: {
+      type: String,
+      required: true,
+    },
+    pattern: {
+      type: String,
+      enum: ["Solid", "Printed", "Textured", "Custom"],
+      default: "Solid",
+    },
+    inStock: {
+      type: Boolean,
+      default: true,
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+    tags: [String],
   },
   { timestamps: true }
 );

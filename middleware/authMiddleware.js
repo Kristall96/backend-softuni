@@ -1,11 +1,11 @@
+// middleware/authMiddleware.js
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-// ✅ Middleware to protect routes
+// ✅ Protect route middleware
 export const protect = async (req, res, next) => {
   let token;
 
-  // Check for Bearer token
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -14,7 +14,6 @@ export const protect = async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Attach user info to request (excluding password)
       req.user = await User.findById(decoded.id).select("-password");
 
       if (!req.user) {
@@ -31,7 +30,7 @@ export const protect = async (req, res, next) => {
   }
 };
 
-// ✅ Middleware to restrict to admins only
+// ✅ Admin-only middleware
 export const isAdmin = (req, res, next) => {
   if (req.user?.isAdmin) {
     next();
