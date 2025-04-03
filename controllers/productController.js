@@ -49,7 +49,6 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-// Rate a product
 export const rateProduct = async (req, res) => {
   const { score, comment, userId } = req.body;
   const productId = req.params.id;
@@ -147,6 +146,23 @@ export const getProducts = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Fetch products error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+export const getSingleProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).populate(
+      "ratings.user",
+      "username"
+    );
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    console.error("❌ Get single product error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

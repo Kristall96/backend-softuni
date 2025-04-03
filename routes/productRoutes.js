@@ -3,8 +3,9 @@ import {
   createProduct,
   rateProduct,
   getProducts,
-} from "../controllers/productController.js";
+} from "../controllers/productCOntroller.js";
 import { protect, isAdmin } from "../middleware/authMiddleware.js";
+import { getSingleProduct } from "../controllers/productCOntroller.js";
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.get("/", getProducts);
 router.get("/test", (req, res) => {
   res.json({ message: "Product routes working" });
 });
+router.get("/:id", getSingleProduct);
 
 export default router;
