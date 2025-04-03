@@ -85,10 +85,68 @@ export const rateProduct = async (req, res) => {
 };
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
-    res.status(200).json(products);
+    const {
+      search,
+      material,
+      color,
+      pattern,
+      inStock,
+      minPrice,
+      maxPrice,
+      capacityMin,
+      capacityMax,
+      page = 1,
+      limit = 25,
+    } = req.query;
+
+    const filter = {};
+
+    // Search by title (case-insensitive)
+    if (search) {
+      filter.title = { $regex: search, $options: "i" };
+    }
+
+    // Exact match filters
+    if (material) filter.material = material;
+    if (color) filter.color = color;
+    if (pattern) filter.pattern = pattern;
+    if (inStock !== undefined) filter.inStock = inStock === "true";
+
+    // Price range
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
+
+    // Capacity range
+    if (capacityMin || capacityMax) {
+      filter.capacity = {};
+      if (capacityMin) filter.capacity.$gte = Number(capacityMin);
+      if (capacityMax) filter.capacity.$lte = Number(capacityMax);
+    }
+
+    const currentPage = parseInt(page) || 1;
+    const pageSize = parseInt(limit) || 25;
+    const skip = (currentPage - 1) * pageSize;
+
+    // Count total matching products
+    const total = await Product.countDocuments(filter);
+
+    // Fetch paginated products
+    const products = await Product.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(pageSize);
+
+    res.status(200).json({
+      products,
+      total,
+      page: currentPage,
+      pages: Math.ceil(total / pageSize),
+    });
   } catch (error) {
-    console.error("Fetch products error:", error);
+    console.error("❌ Fetch products error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
