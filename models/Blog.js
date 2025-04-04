@@ -1,3 +1,6 @@
+// models/Blog.js
+import mongoose from "mongoose";
+
 const blogSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
@@ -12,8 +15,6 @@ const blogSchema = new mongoose.Schema(
       required: true,
     },
     tags: [String],
-
-    // ✅ NEW: Comments field
     comments: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -24,3 +25,6 @@ const blogSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+const Blog = mongoose.model("Blog", blogSchema);
+export default Blog;
