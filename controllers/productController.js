@@ -209,3 +209,15 @@ export const addComment = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+export const getBestSellers = async (req, res) => {
+  try {
+    const products = await Product.aggregate([
+      { $match: { isFeatured: true } },
+      { $sample: { size: 7 } }, // Get 7 random best sellers
+    ]);
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error("❌ Best sellers fetch error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
