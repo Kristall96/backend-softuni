@@ -213,7 +213,7 @@ export const getBestSellers = async (req, res) => {
   try {
     const products = await Product.aggregate([
       { $match: { isFeatured: true } },
-      { $sample: { size: 7 } }, // Get 7 random best sellers
+      { $sample: { size: 5 } }, // Get 7 random best sellers
     ]);
     res.status(200).json({ products });
   } catch (error) {
