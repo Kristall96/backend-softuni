@@ -246,7 +246,7 @@ export const getMostLikedProducts = async (req, res) => {
         },
       },
       { $sort: { averageRating: -1 } },
-      { $limit: 7 },
+      { $limit: 5 },
     ]);
     res.status(200).json({ products });
   } catch (error) {
