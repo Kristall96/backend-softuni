@@ -9,6 +9,7 @@ import {
   deleteProduct, // ✅ use it now
 } from "../controllers/productController.js";
 import { protect, isAdmin } from "../middleware/authMiddleware.js";
+import { getMostLikedProducts } from "../controllers/productController.js";
 
 const router = express.Router();
 
@@ -19,5 +20,6 @@ router.post("/", protect, isAdmin, createProduct);
 router.delete("/:id", protect, isAdmin, deleteProduct); // ✅ protect with admin
 router.post("/:id/rate", protect, rateProduct);
 router.post("/:id/comment", protect, addComment);
+router.get("/most-liked", getMostLikedProducts);
 
 export default router;

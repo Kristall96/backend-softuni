@@ -237,3 +237,20 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+export const getMostLikedProducts = async (req, res) => {
+  try {
+    const products = await Product.aggregate([
+      {
+        $addFields: {
+          averageRating: { $avg: "$ratings.score" },
+        },
+      },
+      { $sort: { averageRating: -1 } },
+      { $limit: 7 },
+    ]);
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error("❌ Most liked fetch error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
