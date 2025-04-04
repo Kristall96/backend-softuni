@@ -5,11 +5,13 @@ import {
   getBlogs,
   getBlogById,
 } from "../controllers/blogController.js";
+import { addCommentToBlog } from "../controllers/blogController.js";
 
 const router = express.Router();
 
 router.get("/", getBlogs);
 router.get("/:id", getBlogById);
 router.post("/", protect, createBlog); // Admin restriction optional
+router.post("/:id/comments", protect, addCommentToBlog);
 
 export default router;

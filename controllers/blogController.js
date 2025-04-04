@@ -53,3 +53,35 @@ export const getBlogById = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+export const addCommentToBlog = async (req, res) => {
+  const { text } = req.body;
+
+  if (!text) {
+    return res.status(400).json({ message: "Comment cannot be empty" });
+  }
+
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
+
+    const comment = {
+      user: req.user._id,
+      text,
+    };
+
+    blog.comments.push(comment);
+    await blog.save();
+
+    const populatedComment = await blog.populate({
+      path: "comments.user",
+      select: "username",
+    });
+
+    const lastComment = populatedComment.comments.at(-1);
+
+    res.status(201).json(lastComment);
+  } catch (err) {
+    console.error("Add blog comment error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
