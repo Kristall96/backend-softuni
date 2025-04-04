@@ -6,41 +6,48 @@ export const createProduct = async (req, res) => {
       title,
       description,
       price,
-      image,
+      images, // ✅ updated to support multiple image URLs
       category,
       capacity,
       material,
       color,
       pattern,
-      inStock,
+      stock,
       isFeatured,
       tags,
     } = req.body;
 
-    // Basic required fields
+    // ✅ Validate required fields
     if (!title || !price || !capacity || !material || !color) {
       return res
         .status(400)
         .json({ message: "Missing required product fields." });
     }
 
+    // ✅ Validate images array (optional: limit to 10)
+    const validImages =
+      Array.isArray(images) && images.length > 0
+        ? images.slice(0, 10) // max 10 images
+        : ["https://via.placeholder.com/300"]; // default fallback
+
     const product = new Product({
       title,
       description,
       price,
-      image,
+      images: validImages, // ✅ use validated image array
       category,
       capacity,
       material,
       color,
       pattern,
-      inStock,
-      isFeatured,
+      stock: stock || 0,
+      isFeatured: isFeatured || false,
       tags,
       createdBy: req.user._id,
     });
 
     await product.save();
+
     res
       .status(201)
       .json({ message: "✅ Product created successfully", product });
@@ -49,6 +56,7 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 export const rateProduct = async (req, res) => {
   const { score, comment, userId } = req.body;
   const productId = req.params.id;
@@ -185,11 +193,9 @@ export const addComment = async (req, res) => {
       (r) => r.user.toString() === userId
     );
     if (userComments.length >= 10) {
-      return res
-        .status(400)
-        .json({
-          message: "You have reached the 10 comment limit for this product.",
-        });
+      return res.status(400).json({
+        message: "You have reached the 10 comment limit for this product.",
+      });
     }
 
     product.ratings.push({ user: userId, score, comment });
