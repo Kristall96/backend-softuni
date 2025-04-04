@@ -254,3 +254,14 @@ export const getMostLikedProducts = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+export const getNewArrivals = async (req, res) => {
+  try {
+    const products = await Product.find()
+      .sort({ createdAt: -1 }) // newest first
+      .limit(7); // only 7 products
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error("❌ New arrivals fetch error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
