@@ -90,8 +90,8 @@ export const getRandomBlogs = async (req, res) => {
   try {
     const blogs = await Blog.aggregate([{ $sample: { size: 3 } }]);
     res.status(200).json({ blogs });
-  } catch (err) {
-    console.error("❌ Random blog fetch error:", err);
+  } catch (error) {
+    console.error("❌ Random blogs fetch error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
