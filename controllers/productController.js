@@ -258,7 +258,7 @@ export const getNewArrivals = async (req, res) => {
   try {
     const products = await Product.find()
       .sort({ createdAt: -1 }) // sort by newest
-      .limit(7); // only return 7
+      .limit(5); // only return 7
     res.status(200).json({ products });
   } catch (error) {
     console.error("❌ New arrivals fetch error:", error);
