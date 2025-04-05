@@ -9,6 +9,7 @@ import {
   deleteProduct,
   getMostLikedProducts,
   getNewArrivals,
+  getLimitedEditionProducts,
 } from "../controllers/productController.js";
 
 import { protect, isAdmin } from "../middleware/authMiddleware.js";
@@ -19,7 +20,7 @@ const router = express.Router();
 router.get("/best-sellers", getBestSellers);
 router.get("/most-liked", getMostLikedProducts);
 router.get("/new-arrivals", getNewArrivals); // 🟢 Move this ABOVE the `/:id` route
-
+router.get("/limited-edition", getLimitedEditionProducts);
 // ✅ General routes after specific ones
 router.get("/", getProducts);
 router.get("/:id", getSingleProduct);

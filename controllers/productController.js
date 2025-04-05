@@ -265,3 +265,14 @@ export const getNewArrivals = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+export const getLimitedEditionProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ tags: "limited" })
+      .sort({ createdAt: -1 }) // optional: sort newest first
+      .limit(5); // only return 7
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error("❌ Limited edition fetch error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
